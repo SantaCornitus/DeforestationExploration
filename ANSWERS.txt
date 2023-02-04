@@ -1,0 +1,55 @@
+1. GLOBAL SITUATION
+	1. 41282694.9 km2 
+	2. 39958245.9 km2 
+	3. 1324449 km2 
+	4. 3.20824258980244 %
+	5. Peru
+	6. 1279999.9891 km2
+
+2. REGIONAL OUTLOOK
+	1. 31.3755709643095%
+	2. Suriname
+	3. 98.2576939676578%
+	4. Greenland
+	5. 0.000535997085208853%
+	6. 32.4222035575689%
+	7. Latin America & Caribbean
+	8. 51.0311952107428%, 
+	9. Middle East & North Africa
+	10. 1.77707845463626% 
+
+	11. Latin America & Caribbean	
+	12. 51.03
+	13. 46.16
+	14. Sub-Saharan Africa	
+	15. 32.19
+	16. 27.56
+	17. 32.42
+	18. 31.38
+
+3. COUNTRY-LEVEL DETAIL
+	AAAAAAAAAAAAAAAAAAA
+	1. Iceland
+	2. 213.664588870028
+	3. French Polynesia
+	4. 181.818181818182
+	5. Russian Federation
+	6. China
+	7. Iceland
+	8. 213.664588870028
+
+	BBBBBBBBBBBBBBBBBBBB
+	9.	Brazil			Latin America & Caribbean	541510
+		Indonesia			East Asia & Pacific		282193.9844
+		Myanmar 			East Asia & Pacific		107234.0039
+													Percent chance 		Percent decrease
+	10.	Honduras				Latin America & Caribbean		-32.7464490718988		-45.0344149459194
+
+		Korea, Dem. People’s Rep.	East Asia & Pacific			-27.3814452455826		-40.2024143397147
+
+		Zimbabwe				Sub-Saharan Africa			-21.751067948267		-37.9642681375203
+
+	
+	
+	
+	

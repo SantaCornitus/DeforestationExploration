@@ -1,0 +1,195 @@
+-------------1. PROJECT Introduction-----------------
+CREATE VIEW forestation AS (
+SELECT 
+	fa.country_code,
+    fa.country_name,
+    fa.year,
+    fa.forest_area_sqkm,
+    la.total_area_sq_mi,
+    r.region,
+    r.income_group,
+	(forest_area_sqkm/(total_area_sq_mi *2.59) *100) AS forest_percentile
+FROM forest_area fa 
+JOIN land_area la ON fa.country_code = la.country_code
+	AND fa.year = la.year
+JOIN regions r ON r.country_code = fa.country_code
+  )
+
+------------2. PROJECT Global Situation--------------------
+ --------ASNWER 1 and 2---------
+SELECT country_name, year, forest_area_sqkm
+FROM forestation
+WHERE region = 'World' AND (year = 2016 OR year =1990)
+
+ --------ASNWER 3---------
+SELECT (SELECT forest_area_sqkm
+FROM forestation
+WHERE region = 'World' AND (year =1990)) -(SELECT forest_area_sqkm
+FROM forestation
+WHERE region = 'World' AND (year = 2016 ))
+
+ --------ASNWER 4---------
+
+SELECT (fas90 - fas16) / fas90 *100 AS loss_percentage
+FROM(
+  SELECT forest_area_sqkm fas16
+  FROM forestation
+  WHERE region = 'World' AND (year =2016)) as f16,
+(
+  SELECT forest_area_sqkm fas90
+  FROM forestation
+  WHERE region = 'World' AND (year = 1990 )) as f90
+
+
+ --------ASNWER 5,6---------
+
+SELECT *, total_area_sq_mi *2.59 AS total_area_sq_km
+FROM forestation 
+WHERE total_area_sq_mi *2.59 <= (
+  SELECT (SELECT forest_area_sqkm
+FROM forestation
+WHERE region = 'World' AND (year =1990)) -(SELECT forest_area_sqkm
+FROM forestation
+WHERE region = 'World' AND (year = 2016 ))) AND year = 2016
+ORDER BY total_area_sq_mi DESC
+
+
+------------2. PROJECT Reional Outlook--------------------
+
+ --------ASNWER 1---------
+SELECT *,
+forest_area_sqkm /(total_area_sq_mi *2.59) *100 percentile_forest
+FROM forestation 
+WHERE country_name = 'World' AND year = 2016
+
+ --------ASNWER 2,3--------- (4,5) without DESC
+SELECT *,
+forest_area_sqkm /(total_area_sq_mi *2.59) *100 percentile_forest
+FROM forestation 
+WHERE year = 2016 AND forest_percentile IS NOT NULL
+ORDER BY percentile_forest DESC
+
+--------ASNWER 6---------              
+SELECT *,
+forest_area_sqkm /(total_area_sq_mi *2.59) *100 percentile_forest
+FROM forestation 
+WHERE year = 1990 AND forest_percentile IS NOT NULL
+AND country_name = 'World'
+ORDER BY percentile_forest 
+
+--------ASNWER 8---------
+
+SELECT region, SUM(forest_area_sqkm) / (SUM(total_area_sq_mi)*2.59) *100 region_forest_percentile
+FROM(
+SELECT *
+FROM forestation 
+WHERE year = 1990 AND forest_area_sqkm IS NOT NULL 
+AND total_area_sq_mi IS NOT NULL
+) as t1
+GROUP BY 1
+ORDER BY 2 DESC
+
+--------ASNWER 8/10---------
+
+WITH forest_per_1990 AS(
+SELECT region, SUM(forest_area_sqkm) / (SUM(total_area_sq_mi)*2.59) *100 region_forest_percentile
+FROM(
+SELECT *
+FROM forestation 
+WHERE year = 1990 AND forest_area_sqkm IS NOT NULL 
+AND total_area_sq_mi IS NOT NULL
+) as t1
+GROUP BY 1
+ORDER BY 2 DESC
+),
+forest_per_2016 AS(
+SELECT region, SUM(forest_area_sqkm) / (SUM(total_area_sq_mi)*2.59) *100 region_forest_percentile
+FROM(
+SELECT *
+FROM forestation 
+WHERE year = 2016 AND forest_area_sqkm IS NOT NULL 
+AND total_area_sq_mi IS NOT NULL
+) as t1
+GROUP BY 1
+ORDER BY 2 DESC
+)
+SELECT f90.region, f90.region_forest_percentile as region_forest_percentile_1990, f16.region_forest_percentile as region_forest_percentile_2016
+FROM forest_per_1990 f90
+JOIN forest_per_2016 f16 ON f90.region = f16.region
+
+
+------------3. PROJECT Country-level detail--------------------
+WITH f90 AS (
+SELECT *
+FROM forestation f
+WHERE forest_area_sqkm IS NOT NULL AND total_area_sq_mi IS NOT NULL
+   AND year = 1990),
+F16 AS (
+SELECT *
+FROM forestation f
+WHERE forest_area_sqkm IS NOT NULL AND total_area_sq_mi IS NOT NULL
+  AND year = 2016)
+
+SELECT f90.country_name, f90.forest_percentile fp90, f16.forest_percentile fp16, f16.forest_percentile-f90.forest_percentile per_increase
+FROM f90
+JOIN f16 ON f90.country_name = f16.country_name
+ORDER BY per_increase DESC
+
+
+--------ASNWER 5---------
+
+WITH f90 AS (
+SELECT *
+FROM forestation f
+WHERE forest_area_sqkm IS NOT NULL AND total_area_sq_mi IS NOT NULL
+   AND year = 1990),
+F16 AS (
+SELECT *
+FROM forestation f
+WHERE forest_area_sqkm IS NOT NULL AND total_area_sq_mi IS NOT NULL
+  AND year = 2016)
+
+SELECT f16.year, f16.forest_area_sqkm km_forest16, f16.total_area_sq_mi mi_total_area16, f16.forest_percentile for_per16,
+f90.year, f90.forest_area_sqkm km_forest90, f90.total_area_sq_mi mi_total_area90, f90.forest_percentile for_per90,
+f16.forest_percentile-f90.forest_percentile per_increase
+FROM f90
+JOIN f16 ON f90.country_name = f16.country_name
+ORDER BY per_increase DESC
+
+
+
+--------ASNWER 9+/B---------
+
+WITH f90 AS (
+SELECT *
+FROM forestation f
+WHERE forest_area_sqkm IS NOT NULL AND total_area_sq_mi IS NOT NULL
+   AND year = 1990),
+F16 AS (
+SELECT *
+FROM forestation f
+WHERE forest_area_sqkm IS NOT NULL AND total_area_sq_mi IS NOT NULL
+  AND year = 2016)
+
+SELECT f16.country_name, f16.year, f16.forest_area_sqkm km_forest16, f16.total_area_sq_mi mi_total_area16, f16.forest_percentile for_per16,
+f90.year, f90.forest_area_sqkm km_forest90, f90.total_area_sq_mi mi_total_area90, f90.forest_percentile for_per90,
+f16.forest_percentile-f90.forest_percentile per_increase,
+f16.forest_area_sqkm-f90.forest_area_sqkm for_inc_per_sqkm
+
+FROM f90
+JOIN f16 ON f90.country_name = f16.country_name
+ORDER BY for_dec_per_sqkm
+
+
+
+
+
+
+
+
+
+
+
+              
+
+
